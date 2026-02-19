@@ -1,0 +1,8 @@
+#Ignores pycache
+__pycache__/
+
+#Ignores venv
+venv/
+
+#Ignores VSCode settings
+.vscode/
