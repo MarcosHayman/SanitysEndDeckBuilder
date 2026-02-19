@@ -57,7 +57,7 @@ You can then install the packages with the command:
 python3 -m pip install --upgrade requests
 ```
 ### Using the Application
-Once all dependencies are installed, you can run 
+Once all dependencies are installed, activate the virtual enviroment (with the same command as on the installing packages section) and then simply run this command:
 ```bash
 python main.py
 ```
