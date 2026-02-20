@@ -6,7 +6,7 @@ import repository
 
 CARD_TYPES = ["creature", "event", "permanent"]
 REGIONS = ["dungeon", "graveyard", "academy", "fishing hamlet", "church", "town", "forest"]
-DB_FILE_NAME = 'cards.db'
+DB_FILE_NAME = repository.DB_FILE_NAME
 
 def create_main_menu():
     print("Welcome to Insight Apparatus, the Sanity's End Deck Builder!\n")
@@ -198,13 +198,13 @@ def add_card_to_deck(deck) -> str:
             add_quantity = 0
             for existing_card in deck["cards"]:
                 if existing_card["name"] == card_name:
-                    add_quantity = max(card_quantity + existing_card["quantity"], 2)
+                    add_quantity = min(card_quantity + existing_card["quantity"], 2)
                     existing_card["quantity"] = add_quantity
                     deck["total"] += add_quantity - existing_card["quantity"]
                     card_exists = True
                     break
             if not card_exists:
-                add_quantity= max(card_quantity, 2)
+                add_quantity= min(card_quantity, 2)
                 deck["cards"].append({
                     "id": card["id"],
                     "name": card["name"],
