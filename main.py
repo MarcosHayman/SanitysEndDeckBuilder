@@ -75,8 +75,8 @@ def single_deck_view_intro(deck) -> str:
     print("Madness Curve")
     for i in range(6):
         collumn_name = f"mad_{i}"
-        if stats[collumn_name] is not None:
-            print(f"{i}: {stats[collumn_name]} {'-'*stats[collumn_name]} ({100*stats[collumn_name]/stats["total"]} %)")
+        madness = 0 if stats[collumn_name] is None else stats[collumn_name] 
+        print(f"{i}: {madness} {'-'*madness} ({100*madness/stats["total"]} %)")
 
     input("Press Enter to continue\n")
     return "What do you want to do with this Deck?"
@@ -160,7 +160,8 @@ def create_in_memory_deck_from_analysis(deck_view) -> dict:
         ],
     }
     for i in range(6):
-        deck["madness"][i] = deck_anlysis["stats"][f"mad_{i}"]
+        madness = deck_anlysis["stats"][f"mad_{i}"]
+        deck["madness"][i] = madness if madness is not None else 0
     cards = repository.get_cards_for_deck_id(deck_view["id"])
     for card in cards:
         deck["cards"].append({
@@ -168,6 +169,7 @@ def create_in_memory_deck_from_analysis(deck_view) -> dict:
             "name": card["name"],
             "region": card["region"],
             "type": card["type"],
+            "madness": card["madness"],
             "quantity": card["quantity"]
         })
     for region in deck_anlysis["regions"]:
