@@ -70,6 +70,14 @@ def single_deck_view_intro(deck) -> str:
     for card_type in CARD_TYPES:
         if stats[card_type] is not None:
             print(f"{card_type}: {stats[card_type]} ({100*stats[card_type]/stats["total"]} %)")
+
+    print("------------------------")
+    print("Madness Curve")
+    for i in range(6):
+        collumn_name = f"mad_{i}"
+        if stats[collumn_name] is not None:
+            print(f"{i}: {stats[collumn_name]} {'-'*stats[collumn_name]} ({100*stats[collumn_name]/stats["total"]} %)")
+
     input("Press Enter to continue\n")
     return "What do you want to do with this Deck?"
 
@@ -80,12 +88,15 @@ def create_deck_menu() -> str:
         "total": 0,
         "cards": [],
         "regions": [],
+        "madness": [],
         "types": [
             {"name": "creature", "quantity": 0},
             {"name": "event", "quantity": 0},
             {"name": "permanent", "quantity": 0}
         ],
     }
+    for i in range(6):
+        deck["madness"].append(0)
     createMenu(create_deck_intro,{
         "Add a card": add_card_to_deck,
         "Remove a card": remove_card_from_deck,
@@ -111,6 +122,11 @@ def generate_partial_deck_view(deck) -> None:
     print('\nCards per type:')
     for type in deck["types"]:
         print(f"{type['quantity']} - {type['name']}")
+    print("\nMadness Curve:")
+    for i in range(6):
+        mad = deck["madness"][i]
+        print(f"{i}: {mad} {'-'*mad} ")
+
     print(f"\nCards in deck ({deck['total']}):")
     for card in deck["cards"]:
         print(f"{card['quantity']}x {card['name']} - {card['region']} {card['type']}")
@@ -136,12 +152,15 @@ def create_in_memory_deck_from_analysis(deck_view) -> dict:
         "total": deck_anlysis["stats"]["total"],
         "regions": [],
         "cards": [],
+        "madness": [],
         "types": [
             {"name": "creature", "quantity": deck_anlysis["stats"]["creature"]},
             {"name": "event", "quantity": deck_anlysis["stats"]["event"]},
             {"name": "permanent", "quantity": deck_anlysis["stats"]["permanent"]}
         ],
     }
+    for i in range(6):
+        deck["madness"][i] = deck_anlysis["stats"][f"mad_{i}"]
     cards = repository.get_cards_for_deck_id(deck_view["id"])
     for card in cards:
         deck["cards"].append({
@@ -210,23 +229,25 @@ def add_card_to_deck(deck) -> str:
                     "name": card["name"],
                     "region": card_region,
                     "type": card_type,
+                    "madness": card["madness"],
                     "quantity": add_quantity
                 })
                 deck["total"] += add_quantity
+            deck["madness"][card["madness"]] += add_quantity
             region_exists = False
             for region in deck["regions"]:
                 if region["name"] == card_region:
-                    region["quantity"] += card_quantity
+                    region["quantity"] += add_quantity
                     region_exists = True
                     break
             if not region_exists:
                 deck["regions"].append({
                     "name": card_region,
-                    "quantity": card_quantity
+                    "quantity": add_quantity
                 })
             for type in deck["types"]:
                 if type["name"] == card_type:
-                    type["quantity"] += card_quantity
+                    type["quantity"] += add_quantity
                     break
             return f"Added {add_quantity} {card['name']} to Deck" 
 
@@ -243,6 +264,7 @@ def remove_card_from_deck(deck) -> str:
             existing_card["quantity"] -= card_quantity
             if existing_card["quantity"] == 0:
                 deck["cards"].remove(existing_card)
+            deck["madness"][existing_card["madness"]] -= card_quantity
             for region in deck["regions"]:
                 if region["name"] == card_region:
                     region["quantity"] -= card_quantity

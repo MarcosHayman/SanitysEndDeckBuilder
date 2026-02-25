@@ -96,10 +96,14 @@ def get_deck_analysis_by_id(deck_id: int):
         type_query = ""
         for card_type in CARD_TYPES:
             type_query += f"sum(dc.quantity) FILTER (WHERE c.type = '{card_type}') as {card_type},"
+        madness_query = ""
+        for i in range(6):
+            madness_query += f"sum(dc.quantity) FILTER (WHERE c.madness = '{i}') as mad_{i},"
         cursor.execute(f'''
                        SELECT d.wins, d.games, d.name,
                        {region_query}
                        {type_query}
+                       {madness_query}
                        sum(dc.quantity) as total
                        FROM decks d
                        INNER JOIN deck_cards dc ON dc.deck_id = d.id
