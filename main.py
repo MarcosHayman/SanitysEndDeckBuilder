@@ -146,6 +146,9 @@ def edit_deck_menu(deck_analysis) -> str:
 
 def create_in_memory_deck_from_analysis(deck_view) -> dict:
     deck_anlysis = deck_view["analysis"]
+    creature_quantity = deck_anlysis["stats"]["creature"]
+    permanent_quantity = deck_anlysis["stats"]["permanent"]
+    event_quantity = deck_anlysis["stats"]["event"]
     deck = {
         "id": deck_view["id"],
         "name": deck_anlysis["stats"]["name"],
@@ -154,9 +157,9 @@ def create_in_memory_deck_from_analysis(deck_view) -> dict:
         "cards": [],
         "madness": [],
         "types": [
-            {"name": "creature", "quantity": deck_anlysis["stats"]["creature"]},
-            {"name": "event", "quantity": deck_anlysis["stats"]["event"]},
-            {"name": "permanent", "quantity": deck_anlysis["stats"]["permanent"]}
+            {"name": "creature", "quantity": creature_quantity if creature_quantity != None else 0},
+            {"name": "event", "quantity": event_quantity if event_quantity != None else 0},
+            {"name": "permanent", "quantity": permanent_quantity if permanent_quantity != None else 0}
         ],
     }
     for i in range(6):
