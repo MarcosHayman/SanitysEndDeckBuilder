@@ -161,7 +161,7 @@ def create_in_memory_deck_from_analysis(deck_view) -> dict:
     }
     for i in range(6):
         madness = deck_anlysis["stats"][f"mad_{i}"]
-        deck["madness"][i] = madness if madness is not None else 0
+        deck["madness"].append(madness if madness is not None else 0)
     cards = repository.get_cards_for_deck_id(deck_view["id"])
     for card in cards:
         deck["cards"].append({
